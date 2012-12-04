@@ -4,8 +4,6 @@
 #########################################
 
 require 'webrick'
-require './servlet'
-require './cgi'
 
 rrr = WEBrick::HTTPServlet::CGIHandler::Ruby
 $ruby = $ruby || rrr
@@ -20,6 +18,7 @@ def start_webrick(config = {})
   conf = {
     :Port => 9999,
     :CGIInterpreter => $ruby,
+    :DocumentRoot => File.dirname( File.expand_path(__FILE__) )
   }
   config.update(conf)  
   server = WEBrick::HTTPServer.new(config)
@@ -32,8 +31,5 @@ end
 
 start_webrick {|server|
   cgi_dir = File.dirname( File.expand_path(__FILE__) )
-  #server.mount("/", WEBrick::HTTPServlet::FileHandler, cgi_dir, {:FancyIndexing=>true})
-  server.mount("/", WEBrick::HTTPServlet::FileHandler, cgi_dir + "/index.rb")
-  #MyCGI.new.start()
-  #server.mount("/hello", MyCGI)
+  server.mount("/mwiki", WEBrick::HTTPServlet::FileHandler, cgi_dir + "/index.rb")
 }

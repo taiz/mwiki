@@ -18,11 +18,20 @@ module MWiki
     attr_accessor :syntax
 
     def valid?(name)
-      not invalid?
+      not invalid?(name)
     end
 
     def exist?(name)
       File.exist?(fspath(name))
+    end
+
+    # file does not exist or file is not readble
+    def invalid?(name)
+      return false unless exist?(name)
+      path = get_path(name)
+      unless path.file? or path.readable?
+        return false
+      end
     end
 
     def find(name)
@@ -30,8 +39,8 @@ module MWiki
     end
 
     def create(name)
-      f = open(fspath(name), 'w')
-      f.close
+      path = get_path(name).open('w')
+      PageEntry.new(path, @syntax)
     end
 
     def find_all(query, regexps)
@@ -45,6 +54,12 @@ module MWiki
         end
       end
       hits
+    end
+
+    def proxy(name, text)
+      pe = PageEntry.new(get_path(name), @syntax)
+      pe.source = text 
+      pe
     end
 
 	  private
@@ -65,26 +80,19 @@ module MWiki
 	    hits
 	  end
 
-    # file does not exist or file is not readble
-    def invalid(name)
-      return false unless exist?(name)
-      path = get_path(name)
-      return false unless path.file? or path.readable?
-    end
-
   end
 
   # Page source and page attriutes
   class PageEntry
 
-      def initialize(path, syntax)
+      def initialize(path = nil, syntax)
         @path   = path
         @syntax = syntax
       end
       attr_reader :syntax
 
       def name
-        path.base_name.to_s
+        @path.basename.to_s
       end
 
       def size
@@ -96,7 +104,7 @@ module MWiki
       end
 
       def source
-        @path.read
+        @text || @path.read
       end
 
       def source= (text)

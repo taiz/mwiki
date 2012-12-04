@@ -17,6 +17,13 @@ module MWiki
       CGI.escapeHTML(str)
     end
 
+    ESC = {
+      '&' => '&amp;',
+      '"' => '&quot;',
+      '<' => '&lt;',
+      '>' => '&gt;'
+    }
+
   end
 
 end

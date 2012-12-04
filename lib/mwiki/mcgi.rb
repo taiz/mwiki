@@ -1,5 +1,7 @@
 require 'mwiki/webrick_cgi'
 require 'mwiki/request'
+require 'mwiki/handler'
+require 'mwiki/response'
 require 'pp'
 
 module MWiki
@@ -14,8 +16,8 @@ module MWiki
       wiki, = *@options
       
       request  = Request.new(req, wiki.locale)
-      #response = Handler.new(wiki).handle(request)
-      #response.update_for res
+      response = Handler.new(wiki).handle(request)
+      response.update_for res
     end
 
     alias :do_POST :do_GET

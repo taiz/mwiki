@@ -1,0 +1,23 @@
+== Dudada
+=== is great
+* TestPage
+* googleさん http://google.com ですよ
+* [[http://yahoo.co.jp]]
+
+#TestPage
+#googleさん http://google.com ですよ
+#[[http://yahoo.co.jp]] yahooさんでした
+
+{{{
+class Dudada
+  det initialize
+  end
+end
+}}}
+
+|||h1|||h2|||h3
+||dudada||nezumi||pengium
+
+:dudada
+ 偉大なるぬいぐるみ
+ かつてないぬいぐるみ

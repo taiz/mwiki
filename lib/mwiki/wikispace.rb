@@ -1,11 +1,12 @@
 require 'mwiki/locale'
+require 'mwiki/page'
 
 module MWiki
 
   class WikiSpace
 
     def initialize(config, database, syntax)
-      @config   = config
+      @config = config
       @db = database
       @db.syntax = syntax
     end
@@ -23,6 +24,7 @@ module MWiki
     end
 
     def view(name)
+      raise "no such file #{name}" unless exist?(name)
       page = @db.find(name)
       ViewPage.new(@config, page)
     end
@@ -40,14 +42,13 @@ module MWiki
     def save(name, text)
       page = @db.find(name) || @db.create(name)
       page.source = text
-      page.save(page)
+      page.save()
       ThanksPage.new(@config, name)
     end
 
     def preview(name, text)
-      page = @db.create(name)
-      page.source = text
-      PreviewPange.new(@config, page)
+      page = @db.proxy(name, text)
+      PreviewPage.new(@config, page)
     end
 
     def search(query, regexps)

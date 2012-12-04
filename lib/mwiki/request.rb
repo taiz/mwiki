@@ -12,7 +12,7 @@ module MWiki
 
     def cmd
       cmd = get('cmd').to_s.downcase
-      return nil unless cmd and page_name
+      return nil unless cmd or page_name
       @cmd ||= cmd
     end
 
@@ -21,7 +21,7 @@ module MWiki
       name = get('name')
       return name if name
 
-      html = @request.path.split('\/').last.strip
+      html = @request.path.split("\/").last.strip
       return nil unless /\.html\z/i =~ html.downcase
 
       @cmd = 'view'
@@ -34,7 +34,7 @@ module MWiki
       normalize_text(text)
     end
 
-    def preview
+    def preview?
       get('preview') ? true : false
     end
 
@@ -61,7 +61,7 @@ module MWiki
     def check_pattern(pat)
       raise WrongQuery, 'no pattern' unless pat
       raise WrongQuery, 'empty pattern' if pat.empty?
-      raise WrongQuery, "pattern too short: #{pat}" if pat.length < 2
+      raise WrongQuery, "pattern too short: #{pat}" if pat.length < 1
       raise WrongQuery, 'pattern too long' if pat.length > 128
     end    
     private :check_pattern
@@ -70,7 +70,7 @@ module MWiki
 
     def normalize_text(text)
       lines = text.split(/\n/).map do |line|
-        l = line.chomp.rstrip + '\r\n'
+        l = line.chomp.rstrip + "\r\n"
         detab(l)
       end.join('')
     end

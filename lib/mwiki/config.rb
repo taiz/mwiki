@@ -31,6 +31,10 @@ module MWiki
     attr_reader :site_name
     attr_reader :logo_url
 
+    def cgi_url
+      @user_cgi_url
+    end
+
     def css_url
       @css_url || "#{@user_cgi_url}/#{theme}.css"
     end

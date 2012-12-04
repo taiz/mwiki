@@ -1,5 +1,13 @@
+require 'mwiki/textutils'
+require 'mwiki/erbutils'
+require 'mwiki/response'
+
 module MWiki
+
   class Page
+    def response
+      Response.new_from_page(self)
+    end
   end
 
   class RhtmlPage < Page
@@ -18,14 +26,26 @@ module MWiki
       'text/html'
     end
 
+    def charset
+      @config.locale.charset
+    end
+
     def css_url
       @config.css_url
+    end
+
+    def last_modified
+      nil
     end
 
     private
 
     def escape_url(str)
       escape_html(URI.escape(str))
+    end
+
+    def page_charset
+      escape_url(@config.locale.charset)
     end
 
   end
@@ -46,7 +66,7 @@ module MWiki
 
     def view_url(page_name)
       if @config.html_url?
-        "#{escape_url(page_name)}#{@config.document_suffix}"
+        "#{cgi_url()}/#{escape_url(page_name)}#{@config.document_suffix}"
       else
         "#{cgi_url}?cmd=view;name=#{escape_url(page_name)}"
       end
@@ -61,6 +81,7 @@ module MWiki
 
     def compile_page(content)
       @page.syntax.compile(content, @page.name)
+      #content
     end
 
     def page_name
@@ -106,28 +127,86 @@ module MWiki
     end
     
     def body
-      compile_page(@page.soruce)
+      compile_page(@page.source)
+    end
+
+    def css_url
+      if @config.html_url?
+      then "/#{@config.css_url}"
+      else @config.css_url
+      end
     end
   end
 
-  class ViewPage < NamedPage
+  class EditPage < NamedPage
     def initialize(config, page)
       super
-    end
-
-    def last_modified
-      mtime()
     end
 
     private
 
     def template_id
-     'view'
+     'edit'
     end
     
     def body
-      compile_page(@page.soruce)
+      @page.source
     end
+  end
+
+  class ThanksPage < WikiPage
+    def initialize(config, page_name)
+      super(config)
+      @page_name = page_name
+    end
+
+    def template_id
+      'thanks'
+    end
+
+    def page_view_url
+      if @config.html_url?
+        "#{cgi_url()}/#{escape_url(@page_name)}#{@config.document_suffix}"
+      else
+        "#{cgi_url()}?cmd=view;name=#{escape_url(@page_name)}"
+      end
+    end
+  end
+
+  class PreviewPage < NamedPage
+    def initialize(config, page)
+      super
+      @text = page.source
+    end
+
+    private
+
+    def template_id
+     'preview'
+    end
+
+    def body
+      @text
+    end
+
+    def compiled_body
+      compile_page(@page.source, @page.name)
+      #@text
+    end
+  end
+
+  class SearchResultPage < WikiPage
+    def initialize(config, pages)
+      super(config)
+      @pages = pages
+    end
+
+    attr_reader :pages
+
+    def template_id
+     'search_result'
+    end
+
   end
 
 end

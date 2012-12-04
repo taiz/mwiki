@@ -10,12 +10,12 @@ end
 def load_mwiki_context
   # set config
   config = MWiki::Config.new(
-    :locale       => nil,
+    :locale       => MWiki::Locale.new,
     :templatedir  => "#{mwiki_cgidir}/templates",
     :css_url      => "default.css",
     :site_name    => "MWikipedia",
     :cgi_url      => "/mwiki",
-    :use_html_url => nil
+    :use_html_url => true
   )
 
   # set database
@@ -24,7 +24,7 @@ def load_mwiki_context
   )
 
   # set wiki syntax
-  syntax = MWiki::Syntax.new
+  syntax = MWiki::Syntax.new(config, database)
 
   MWiki::WikiSpace.new(config, database, syntax)
 end

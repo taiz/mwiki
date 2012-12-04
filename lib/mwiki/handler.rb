@@ -1,9 +1,11 @@
+require 'mwiki/textutils'
+
 module MWiki
 
   # Requestからパラメータを取り出して、cmdごとに各処理にディスパッチする
   # 処理の実装はWikiSpaceに委譲する
   class Handler
-    inculde TextUtils
+    include TextUtils
 
     def initialize(wiki)
       @wiki = wiki
@@ -16,7 +18,11 @@ module MWiki
     end
 
     def _handle(req)
-      cmd = req.cmd || 'view'
+      if req.cmd and !req.cmd.empty?
+        cmd = req.cmd
+      else
+        cmd = 'view'
+      end
       method = "handle_#{cmd}"
       send(method, req)
     end
@@ -34,9 +40,9 @@ module MWiki
       end
       html << "</pre></body></html>"
 
-      #res = Response.new
-      #res.set_content_body html, 'text/html', @wiki.locale.charset
-      #res
+      res = Response.new
+      res.set_content_body html, 'text/html', @wiki.locale.charset
+      res
     end
 
     def handle_view(req)
@@ -71,7 +77,7 @@ module MWiki
       return handle_preview(req) if req.preview?
       
       text = req.normalized_text
-      @wiki.save(page_name, text)
+      @wiki.save(page_name, text).response
     end
 
     def handle_preview(req)
@@ -79,9 +85,9 @@ module MWiki
     end
 
     def handle_search(req)
-      @wiki.search(req.search_query, req.search_regexps)
-    rescue WrongQuery => err
-      @wiki.search_error(req.search_query, err).response
+      @wiki.search(req.search_query, req.search_regexps).response
+    #rescue WrongQuery => err
+    #  @wiki.search_error(req.search_query, err).response
     end
   end
 

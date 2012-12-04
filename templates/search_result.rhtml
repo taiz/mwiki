@@ -3,17 +3,28 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=<%= page_charset() %>">
   <meta http-equiv="Content-Language" content="ja-JP">
+  <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="<%= css_url() %>">
-  <title><%= front_page?() ? site_name() : page_name() %></title>
+  <title>Search Result</title>
 </head>
 <body>
 
-<h1><%= logo_url() %><%= front_page?() ? site_name() : page_name() %></h1>
-<p>
-</p>
-<%= body() %>
+<h1><%= logo_url() %>Search Result</h1>
 
-<hr>
+<ol>
+<%
+  n_hits = 0
+  pages.each do |page, head|
+%>
+<li><a href="<%= view_url(page)%>"><%= escape_html(page) %></a> <%= escape_html(head) %></li>
+<%
+  n_hits += 1
+  end
+%>
+</ol>
+
+<p><%= n_hits %> hits.</p>
 
 </body>
 </html>
+
