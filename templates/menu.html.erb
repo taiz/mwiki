@@ -1,0 +1,13 @@
+<span class="menuitem">
+<a href=<%= cgi_url %>?cmd=list>List</a>
+</span>
+
+<span class="menuitem">
+<a href=<%= cgi_url %>?cmd=edit&name=<%= page_url %>>Edit</a>
+</span>
+
+<span class="menuitem">
+<% if menu_deletable? %>
+  <a href=<%= cgi_url %>?cmd=delete&name=<%= page_url %>>Delete</a>
+<% end %>
+</span>

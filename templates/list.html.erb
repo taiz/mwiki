@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="ja-JP">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=<%= page_charset() %>">
+  <meta http-equiv="Content-Language" content="ja-JP">
+  <link rel="stylesheet" type="text/css" href="<%= css_url() %>">
+  <title>list</title>
+</head>
+<body>
+
+<h1><%= logo_url() %>List of All pages</h1>
+<ol>
+<% page_list.each do |page| %>
+  <li>
+    <a href="<%= view_url(page.name) %>"><%= page.name %></a>
+    <span class="list"><%= page.timestamp %></span>
+  </li>
+<% end %>
+</ol>
+
+<hr>
+
+</body>
+</html>
