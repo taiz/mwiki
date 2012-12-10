@@ -111,9 +111,7 @@ module MWiki
 
       # インデントを初期化する
       push_indent(indentof(@f.peek)) {
-        @f.while_match(mark_re) do |line0|
-          # RDスタイルを統合する
-          line = unify_listitem_style(line0)
+        @f.while_match(mark_re) do |line|
           # 1.ネストからの戻り
           if indent_shallower?(line)
             @f.ungets line
@@ -141,12 +139,8 @@ module MWiki
       @result << "</#{type}>\n"
     end
 
-    def unify_listitem_style(line0)
-      line0
-    end
-
     def next_line_is_nested_list(mark_re)
-      line = unify_listitem_style(@f.peek)
+      line = @f.peek
       mark_re =~ line and indent_deeper?(line)
     end
 
@@ -346,16 +340,21 @@ module MWiki
       return escape_html(name) if @db.invalid?(name)
       if @db.exist?(name)
       then %Q[<a href="#{view_url(name)}">#{escape_html(name)}</a>]
-      else %Q[<a href="#{view_url(name)}" class="dangling">?</a>#{escape_html(name)}]
+      else %Q[<a href="#{edit_url(name)}">#{escape_html(name)}</a>]
       end
+      #%Q[<a href="#{view_url(name)}">#{escape_html(name)}</a>]
     end
 
     def view_url(page_name)
       if @config.html_url?
         "#{cgi_href}/#{escape_html(page_name)}#{@config.document_suffix}"
       else
-        "#{cgi_href}?cmd=view;name=#{escape_url(page_name)}"
+        "#{cgi_href}?cmd=view&name=#{escape_url(page_name)}"
       end
+    end
+
+    def edit_url(page_name)
+      "#{cgi_href}?cmd=edit&name=#{escape_url(page_name)}"
     end
     
     def cgi_href

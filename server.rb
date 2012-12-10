@@ -1,8 +1,3 @@
-#$ruby = "C:/ruby/bin/ruby.exe"
- 
-#########################################
-#########################################
-
 require 'webrick'
 
 rrr = WEBrick::HTTPServlet::CGIHandler::Ruby

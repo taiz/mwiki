@@ -3,7 +3,7 @@ require 'mwiki/textutils'
 module MWiki
 
   # Requestからパラメータを取り出して、cmdごとに各処理にディスパッチする
-  # 処理の実装はWikiSpaceに委譲する
+  # 処理はWikiSpaceに委譲する
   class Handler
     include TextUtils
 
@@ -57,7 +57,7 @@ module MWiki
       page_name = req.page_name
       return nil unless page_name
       return nil unless @wiki.valid? page_name
-      return nil unless @wiki.exist? page_name
+      #return nil unless @wiki.exist? page_name
       @wiki.edit(page_name).response
     end
 
@@ -80,8 +80,20 @@ module MWiki
       @wiki.save(page_name, text).response
     end
 
+    def handle_delete(req)
+      page_name = req.page_name
+      return nil unless page_name
+      return nil unless @wiki.valid? page_name
+      return nil unless @wiki.exist? page_name
+      @wiki.delete(page_name).response
+    end
+
     def handle_preview(req)
       @wiki.preview(req.page_name, req.normalized_text).response
+    end
+
+    def handle_list(req)
+      @wiki.list.response
     end
 
     def handle_search(req)

@@ -30,7 +30,10 @@ module MWiki
     end
 
     def edit(name)
-      page = @db.find(name)
+      if File.exist?(name)
+      then page = @db.find(name)
+      else page = @db.proxy(name, "")
+      end
       EditPage.new(@config, page)
     end
 
@@ -49,6 +52,15 @@ module MWiki
     def preview(name, text)
       page = @db.proxy(name, text)
       PreviewPage.new(@config, page)
+    end
+
+    def list
+      ListPage.new(@config, @db.list_page)
+    end
+
+    def delete(name)
+      @db.find(name).delete
+      DeletePage.new(@config, name)
     end
 
     def search(query, regexps)

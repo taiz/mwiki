@@ -17,6 +17,10 @@ module MWiki
       CGI.escapeHTML(str)
     end
 
+    def escape_url(str)
+      URI.escape(str)
+    end
+
     ESC = {
       '&' => '&amp;',
       '"' => '&quot;',

@@ -10,7 +10,7 @@ module MWiki
     end
   end
 
-  class RhtmlPage < Page
+  class ErbPage < Page
     include TextUtils
     include ErbUtils
 
@@ -50,7 +50,7 @@ module MWiki
 
   end
 
-  class WikiPage < RhtmlPage
+  class WikiPage < ErbPage
     def initialize(config)
       super(config)
     end
@@ -68,9 +68,11 @@ module MWiki
       if @config.html_url?
         "#{cgi_url()}/#{escape_url(page_name)}#{@config.document_suffix}"
       else
-        "#{cgi_url}?cmd=view;name=#{escape_url(page_name)}"
+        "#{cgi_url}?cmd=view&name=#{escape_url(page_name)}"
       end
     end
+
+    def menu_deletable?; false; end
   end
 
   class NamedPage < WikiPage
@@ -108,10 +110,11 @@ module MWiki
       u = @config.logo_url
       u ? %[<img class="sitelogo" src="#{escape_html(u)}" alt=""> ] : ''
     end
-
   end
 
   class ViewPage < NamedPage
+    def menu_deletable?; true; end
+
     def initialize(config, page)
       super
     end
@@ -136,6 +139,25 @@ module MWiki
       else @config.css_url
       end
     end
+
+    def menu_deletable?; true; end
+  end
+
+  class ListPage < WikiPage
+    def initialize(config, pages)
+      super(config)
+      @pages = pages
+    end
+
+    def template_id
+     'list'
+    end
+
+    def page_list
+      #page_names = @pages.map {|p| p.name}
+      #page_names.sort {|n1, n2| n1.downcase <=> n2.downcase}
+      @pages.sort {|p1, p2| p1.name.downcase <=> p2.name.downcase}
+    end
   end
 
   class EditPage < NamedPage
@@ -151,6 +173,13 @@ module MWiki
     
     def body
       @page.source
+    end
+
+    def menu_deletable?
+      unless @page.is_proxy?
+      then true
+      else false
+      end
     end
   end
 
@@ -173,6 +202,23 @@ module MWiki
     end
   end
 
+  class DeletePage < WikiPage
+    def initialize(config, page_name)
+      super(config)
+      @page_name = page_name
+    end
+
+    attr_accessor :page_name
+
+    def template_id
+      'delete'
+    end
+
+    def page_view_url
+      "#{cgi_url()}?cmd=list"
+    end
+  end
+
   class PreviewPage < NamedPage
     def initialize(config, page)
       super
@@ -190,7 +236,7 @@ module MWiki
     end
 
     def compiled_body
-      compile_page(@page.source, @page.name)
+      compile_page(@page.source)
       #@text
     end
   end

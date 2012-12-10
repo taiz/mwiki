@@ -7,7 +7,6 @@ require 'pp'
 module MWiki
 
   class MCGI < WEBrick::CGI
-    # cgiを起動する
     def self.main(wiki)
       super({}, wiki)
     end

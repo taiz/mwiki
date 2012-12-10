@@ -43,6 +43,13 @@ module MWiki
       PageEntry.new(path, @syntax)
     end
 
+    def list_page
+      paths = Pathname.new(@root_path).children.select do |path|
+        path.file?
+      end
+      paths.map {|path| PageEntry.new(path, @syntax)}
+    end
+
     def find_all(query, regexps)
       hits = {}
       Pathname.new(@root_path).children.each do |path|
@@ -119,6 +126,17 @@ module MWiki
         not @path.writable?
       end
 
+      def is_proxy?
+        !@path.exist?
+      end
+
+      def delete
+        @path.delete
+      end
+
+      def timestamp
+        @path.mtime.strftime("%Y-%m-%d %X")
+      end
   end
 
 end

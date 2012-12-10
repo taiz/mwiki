@@ -10,8 +10,7 @@ module MWiki
     end
 
     def get_template(templdir, id)
-      File.read("#{templdir}/#{id}.rhtml").gsub(/^\s*\.include (\w+)\b/) do
-        p $1
+      File.read("#{templdir}/#{id}.html.erb").gsub(/^\s*\.include (\w+)\b/) do
         get_template(templdir, $1)
       end
     end
